@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,8 @@ public class MainFragment extends Fragment {
     RecyclerView photoGrid;
     List<Integer> photos;
     Adapter adapter;
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     public MainFragment() {
         // Required empty public constructor
@@ -33,6 +38,9 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("message");
+        myRef.setValue("Clicked photo nr: ");
         photoGrid = view.findViewById(R.id.rv);
         photos = new ArrayList<>();
         photos.add(R.drawable.cat1);
@@ -48,7 +56,7 @@ public class MainFragment extends Fragment {
         photos.add(R.drawable.cat1);
         photos.add(R.drawable.cat2);
 
-        adapter = new Adapter(getContext(), photos);
+        adapter = new Adapter(getContext(), photos, myRef);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2, GridLayoutManager.VERTICAL, false);
         photoGrid.setLayoutManager(layoutManager);
         photoGrid.setAdapter(adapter);
