@@ -5,30 +5,40 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment {
-    RecyclerView photoGrid;
-    List<Integer> photos;
-    Adapter adapter;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
+    NavController navController;
+    Button addImageButton;
+    Button galleryButton;
 
     public MainFragment() {
         // Required empty public constructor
     }
+
+    private View.OnClickListener addImageOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            navController.navigate(R.id.mainToChoose);
+        }
+    };
+    private View.OnClickListener galleryOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            navController.navigate(R.id.mainToGallery);
+        }
+    };
 
     public static MainFragment newInstance(String param1, String param2) {
         MainFragment fragment = new MainFragment();
@@ -38,28 +48,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("message");
-        myRef.setValue("Clicked photo nr: ");
-        photoGrid = view.findViewById(R.id.rv);
-        photos = new ArrayList<>();
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-
-        adapter = new Adapter(getContext(), photos, myRef);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2, GridLayoutManager.VERTICAL, false);
-        photoGrid.setLayoutManager(layoutManager);
-        photoGrid.setAdapter(adapter);
+        navController = Navigation.findNavController(view);
+        addImageButton = view.findViewById(R.id.addImageButton);
+        galleryButton = view.findViewById(R.id.toGalleryButton);
+        addImageButton.setOnClickListener(addImageOnClickListener);
+        galleryButton.setOnClickListener(galleryOnClickListener);
     }
 
     @Override
