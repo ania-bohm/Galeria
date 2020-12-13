@@ -2,6 +2,8 @@ package com.annabohm.demoapp;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +22,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,6 +36,7 @@ public class ChooseImageFragment extends Fragment {
     Button chooseImageButton, uploadButton;
     ImageView chosenImage;
     StorageReference storageReference;
+    FirebaseStorage firebaseStorage;
     public Uri imageUri;
     public ChooseImageFragment() {
         // Required empty public constructor
@@ -114,7 +121,7 @@ public class ChooseImageFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1 && resultCode == RESULT_OK && data!=null && data.getData()!=null){
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
             chosenImage.setImageURI(imageUri);
         }
