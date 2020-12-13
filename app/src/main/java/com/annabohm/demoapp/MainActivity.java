@@ -8,12 +8,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 public class MainActivity extends AppCompatActivity {
-    NavController navController;
+    NavController navController = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
 
 
