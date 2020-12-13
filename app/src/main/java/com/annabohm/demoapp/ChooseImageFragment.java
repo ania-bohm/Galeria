@@ -36,7 +36,6 @@ public class ChooseImageFragment extends Fragment {
     Button chooseImageButton, uploadButton;
     ImageView chosenImage;
     StorageReference storageReference;
-    FirebaseStorage firebaseStorage;
     public Uri imageUri;
     public ChooseImageFragment() {
         // Required empty public constructor
@@ -69,18 +68,10 @@ public class ChooseImageFragment extends Fragment {
         storageReference = FirebaseStorage.getInstance().getReference("Images");
 
         chooseImageButton = view.findViewById(R.id.chooseImageButton);
-        uploadButton = view.findViewById(R.id.uploadButton);
-        chosenImage = view.findViewById(R.id.chosenImage);
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chooseFile();
-            }
-        });
-        uploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadImage();
             }
         });
     }
@@ -89,6 +80,9 @@ public class ChooseImageFragment extends Fragment {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+        //
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        //
         startActivityForResult(intent, 1);
     }
 
@@ -96,27 +90,30 @@ public class ChooseImageFragment extends Fragment {
         ContentResolver contentResolver = getContext().getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
 
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
-    private void uploadImage(){
-        StorageReference ref = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
-        ref.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
-                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        // ...
-                    }
-                });
-    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -125,5 +122,37 @@ public class ChooseImageFragment extends Fragment {
             imageUri = data.getData();
             chosenImage.setImageURI(imageUri);
         }
+        //
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+
+            if (data.getClipData() != null) {
+
+                int totalItem = data.getClipData().getItemCount();
+
+                for (int i = 0; i < totalItem; i++) {
+
+                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                    String imagename = getFileName(imageUri);
+
+                    //StorageReference mRef = storageReference.child("image").child(imagename);
+                    StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
+
+                    mRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), "Process failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            } else if (data.getData() != null) {
+                Toast.makeText(getContext(), "single", Toast.LENGTH_SHORT).show();
+            }
+        }
+        //
     }
 }
