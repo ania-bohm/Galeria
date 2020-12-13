@@ -11,12 +11,29 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_mainFragment_to_photo"
-            app:destination="@id/photo" />
+            android:id="@+id/mainToGallery"
+            app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/mainToChoose"
+            app:destination="@id/chooseImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/photo"
         android:name="com.annabohm.demoapp.Photo"
         android:label="fragment_photo"
         tools:layout="@layout/fragment_photo" />
+    <fragment
+        android:id="@+id/chooseImageFragment"
+        android:name="com.annabohm.demoapp.ChooseImageFragment"
+        android:label="fragment_choose_image"
+        tools:layout="@layout/fragment_choose_image" />
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.annabohm.demoapp.GalleryFragment"
+        android:label="fragment_gallery"
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_galleryFragment_to_photo"
+            app:destination="@id/photo" />
+    </fragment>
 </navigation>
