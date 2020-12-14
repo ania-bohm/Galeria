@@ -165,7 +165,33 @@ public class ChooseImageFragment extends Fragment {
                     });
                 }
             } else if (data.getData() != null) {
-                Toast.makeText(getContext(), "single", Toast.LENGTH_SHORT).show();
+                Uri imageUri = data.getData();
+
+                //StorageReference mRef = storageReference.child("image").child(imagename);
+                final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
+
+                mRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getContext(), "Single image uploaded successfully", Toast.LENGTH_SHORT).show();
+                        //
+                        mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                //You will get download URL in uri
+                                Log.d(TAG, "Download URL = "+ uri.toString());
+                                //Adding that URL to Realtime database
+                                mDatabase.child(String.valueOf(System.currentTimeMillis())).setValue(uri.toString());
+                            }
+                        });
+                        //
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Process failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
         //
