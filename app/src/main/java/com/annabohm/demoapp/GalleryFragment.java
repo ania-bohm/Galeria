@@ -11,15 +11,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GalleryFragment extends Fragment {
     RecyclerView photoGrid;
-    List<Integer> photos;
+    List<String> photos;
     Adapter adapter;
+    DatabaseReference mReference;
 
     public GalleryFragment() {
         // Required empty public constructor
@@ -35,18 +44,21 @@ public class GalleryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         photoGrid = view.findViewById(R.id.rv);
         photos = new ArrayList<>();
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
-        photos.add(R.drawable.cat1);
-        photos.add(R.drawable.cat2);
+        mReference = FirebaseDatabase.getInstance().getReference();
+        mReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    photos.add(child.getValue().toString());
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         adapter = new Adapter(getContext(), photos);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2, GridLayoutManager.VERTICAL, false);

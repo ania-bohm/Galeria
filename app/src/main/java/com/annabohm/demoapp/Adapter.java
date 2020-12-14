@@ -12,15 +12,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
-    List<Integer> photos;
+    List<String> photos;
     LayoutInflater inflater;
+    DatabaseReference mReference;
 
-
-    public Adapter(Context context, List<Integer> photos) {
+    public Adapter(Context context, List<String> photos) {
         this.photos = photos;
         this.inflater = LayoutInflater.from(context);
 
@@ -34,8 +41,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.photo.setImageResource(photos.get(position));
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        Picasso.get().load(photos.get(position)).into(holder.photo);
+        //holder.photo.setImageResource(photos.get(position));
     }
 
     @Override
