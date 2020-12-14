@@ -1,6 +1,8 @@
 package com.annabohm.demoapp;
 
 import android.content.Context;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.net.URI;
 import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -26,11 +29,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     List<String> photos;
     LayoutInflater inflater;
     DatabaseReference mReference;
+    Context context;
 
     public Adapter(Context context, List<String> photos) {
         this.photos = photos;
         this.inflater = LayoutInflater.from(context);
-
+        this.context=context;
     }
 
     @NonNull
@@ -42,7 +46,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        Picasso.get().load(photos.get(position)).into(holder.photo);
+
+        Picasso.get().load(photos.get(position)).resize(400,400).centerCrop().into(holder.photo);
         //holder.photo.setImageResource(photos.get(position));
     }
 
@@ -50,6 +55,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public int getItemCount() {
         return photos.size();
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView photo;

@@ -3,14 +3,21 @@ package com.annabohm.demoapp;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +37,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -41,6 +51,7 @@ public class ChooseImageFragment extends Fragment {
     ImageView chosenImage;
     StorageReference storageReference;
     DatabaseReference mDatabase;
+
     public Uri imageUri;
     public ChooseImageFragment() {
         // Required empty public constructor
@@ -85,6 +96,7 @@ public class ChooseImageFragment extends Fragment {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+//        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
         //
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         //
@@ -100,7 +112,7 @@ public class ChooseImageFragment extends Fragment {
     public String getFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
-            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+            Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
@@ -120,14 +132,13 @@ public class ChooseImageFragment extends Fragment {
     }
 
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-//            imageUri = data.getData();
-//            chosenImage.setImageURI(imageUri);
-//        }
-        //
+        RotateBitmap rotateBitmap = new RotateBitmap();
+        Bitmap bitmap = null;
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
             if (data.getClipData() != null) {
@@ -137,11 +148,18 @@ public class ChooseImageFragment extends Fragment {
                 for (int i = 0; i < totalItem; i++) {
 
                     Uri imageUri = data.getClipData().getItemAt(i).getUri();
-
+//                    String path = data.getClipData().getItemAt(i);
+                    try {
+                        bitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), imageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     //StorageReference mRef = storageReference.child("image").child(imagename);
                     final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
-
-                    mRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] byteData = baos.toByteArray();
+                    mRef.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
@@ -169,7 +187,14 @@ public class ChooseImageFragment extends Fragment {
 
                 //StorageReference mRef = storageReference.child("image").child(imagename);
                 final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
-
+                try {
+                    bitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), imageUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] byteData = baos.toByteArray();
                 mRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
