@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "190124814742",
+    "project_id": "galleryinsert",
+    "storage_bucket": "galleryinsert.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190124814742:android:1277390efa4a9e4e562db7",
+        "android_client_info": {
+          "package_name": "com.annabohm.demoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "190124814742-117i0ad591kutgp2ugn9gq8i719a2hlh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annabohm.demoapp",
+            "certificate_hash": "98307ac9e43947b571d25648975c305181679106"
+          }
+        },
+        {
+          "client_id": "190124814742-qcr4lom67nt1kosfpgtldlv5sip84buo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8-ahYVv00eMoyYFFp4EYYv2TwygZxu5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "190124814742-qcr4lom67nt1kosfpgtldlv5sip84buo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

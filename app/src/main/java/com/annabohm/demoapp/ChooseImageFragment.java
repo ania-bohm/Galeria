@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -30,12 +33,14 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
 
 public class ChooseImageFragment extends Fragment {
 
     Button chooseImageButton, uploadButton;
     ImageView chosenImage;
     StorageReference storageReference;
+    DatabaseReference mDatabase;
     public Uri imageUri;
     public ChooseImageFragment() {
         // Required empty public constructor
@@ -66,7 +71,7 @@ public class ChooseImageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         storageReference = FirebaseStorage.getInstance().getReference("Images");
-
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://galeria-72a00-default-rtdb.firebaseio.com/");
         chooseImageButton = view.findViewById(R.id.chooseImageButton);
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,10 +123,10 @@ public class ChooseImageFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            chosenImage.setImageURI(imageUri);
-        }
+//        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+//            imageUri = data.getData();
+//            chosenImage.setImageURI(imageUri);
+//        }
         //
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
@@ -132,15 +137,25 @@ public class ChooseImageFragment extends Fragment {
                 for (int i = 0; i < totalItem; i++) {
 
                     Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                    String imagename = getFileName(imageUri);
 
                     //StorageReference mRef = storageReference.child("image").child(imagename);
-                    StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
+                    final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
 
                     mRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                            //
+                            mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    //You will get download URL in uri
+                                    Log.d(TAG, "Download URL = "+ uri.toString());
+                                    //Adding that URL to Realtime database
+                                    mDatabase.child(String.valueOf(System.currentTimeMillis())).setValue(uri.toString());
+                                }
+                            });
+                            //
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
