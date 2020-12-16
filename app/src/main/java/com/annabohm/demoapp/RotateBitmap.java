@@ -106,7 +106,7 @@ public class RotateBitmap {
      * @param selectedImage Image URI
      * @return The resulted Bitmap after manipulation
      */
-    @SuppressLint("NewApi")
+    @SuppressLint({"NewApi", "LongLogTag"})
     private Bitmap rotateImageIfRequired(Bitmap img, Uri selectedImage) throws IOException {
 
         InputStream input = mContext.getContentResolver().openInputStream(selectedImage);
@@ -127,7 +127,7 @@ public class RotateBitmap {
                     return img;
             }
         } catch (NullPointerException e) {
-            Log.e(TAG, "rotateImageIfRequired: Could not read file." + e.getMessage());
+            Log.e(TAG, "Could not read file." + e.getMessage());
         }
         return img;
     }
