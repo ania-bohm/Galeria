@@ -10,6 +10,8 @@ import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -36,25 +38,35 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     DatabaseReference mReference;
     Context context;
     NavController navController;
+    boolean deleteAction;
 
     public Adapter(Context context, List<String> photos) {
         this.photos = photos;
         this.inflater = LayoutInflater.from(context);
         this.context=context;
+        deleteAction = false;
     }
+    public void activateCheckboxes(){
+        int count  = this.getItemCount();
 
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.mini_photo, parent, false);
-
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        Picasso.get().load(photos.get(holder.getAdapterPosition())).resize(400,400).centerCrop().into(holder.photo);
+        if(deleteAction){
+            holder.deleteCheckBox.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.deleteCheckBox.setVisibility(View.GONE);
+        }
 
-        Picasso.get().load(photos.get(position)).resize(400,400).centerCrop().into(holder.photo);
 //        Picasso.get().load(photos.get(position)).resize(400,400).centerCrop().into(holder.bigPhoto);
     }
 
@@ -64,14 +76,18 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         ImageView photo;
+        CheckBox deleteCheckBox;
+        boolean isChecked;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            isChecked = false;
             photo = itemView.findViewById(R.id.photo);
-
+            deleteCheckBox = itemView.findViewById(R.id.deleteCheckBox);
             photo.setOnClickListener(this);
+            photo.setOnLongClickListener(this);
 
         }
 
@@ -86,5 +102,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             bundle.putParcelable("photo",bitmap);
             navController.navigate(R.id.galleryToPhoto, bundle);
         }
+
+        @Override
+        public boolean onLongClick(View view) {
+            deleteAction = true;
+            notifyDataSetChanged();
+            return true;
+        }
+
+
     }
 }

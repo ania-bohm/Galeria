@@ -61,6 +61,7 @@ public class GalleryFragment extends Fragment {
         });
 
         adapter = new Adapter(getContext(), photos);
+        adapter.notifyDataSetChanged();
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2, GridLayoutManager.VERTICAL, false);
         photoGrid.setLayoutManager(layoutManager);
         photoGrid.setAdapter(adapter);
