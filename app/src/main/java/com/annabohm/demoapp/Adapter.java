@@ -89,13 +89,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                 return true;
             }
         });
-
     }
     public void deleteImages() {
 
         for (int position:selectedList) {
             String uri = photos.get(position);
-
             photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
             mReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://galeria-72a00-default-rtdb.firebaseio.com/");
             mReference.addValueEventListener(new ValueEventListener() {
@@ -155,7 +153,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         selectedList.clear();
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -174,15 +171,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         else{
             holder.deleteCheckBox.setVisibility(View.GONE);
         }
-
-//        Picasso.get().load(photos.get(position)).resize(400,400).centerCrop().into(holder.bigPhoto);
     }
 
     @Override
     public int getItemCount() {
         return photos.size();
     }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
         ImageView photo;
@@ -192,8 +186,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-//            actionDelete = ((MainActivity) context).findViewById(R.id.action_delete);
-//            actionCancel = ((MainActivity) context).findViewById(R.id.action_cancel);
             isChecked = false;
             photo = itemView.findViewById(R.id.photo);
             deleteCheckBox = itemView.findViewById(R.id.deleteCheckBox);
@@ -205,7 +197,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                     BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
                     Bitmap bitmap = drawable.getBitmap();
                     bundle.putParcelable("photo",bitmap);
-                    MainActivity.mThis.getSupportActionBar().hide();
+//                    MainActivity.mThis.getSupportActionBar().hide();
                     navController.navigate(R.id.galleryToPhoto, bundle);
                 }
             });
@@ -238,8 +230,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                    }
                 }
             });
-
         }
-
     }
 }

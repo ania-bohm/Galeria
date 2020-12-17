@@ -1,6 +1,5 @@
 package com.annabohm.demoapp;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 
@@ -20,8 +19,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mThis = this;
-//        deleteItem = findViewById(R.id.action_cancel);
-//        cancelItem = findViewById(R.id.action_delete);
     }
 
     @Override
@@ -32,15 +29,6 @@ public class MainActivity extends AppCompatActivity {
         actionDelete = findViewById(R.id.action_delete);
         return true;
     }
-//    public void hideActionBar(){
-//        this.getActionBar().hide();
-//        this.getSupportActionBar()
-//    }
-//    public void showActionBar(){
-//        this.getActionBar().show();
-//    }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -60,6 +48,4 @@ public class MainActivity extends AppCompatActivity {
         mMenu = menu;
         return super.onPrepareOptionsMenu(menu);
     }
-
-
 }

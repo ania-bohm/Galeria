@@ -1,6 +1,5 @@
 package com.annabohm.demoapp;
 
-import android.app.ActionBar;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
@@ -11,22 +10,17 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Photo#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class Photo extends Fragment {
 
     ImageView photo;
-    Bitmap bitmap;
     NavController navController;
+    Bundle bundle;
+    Bitmap bitmap;
+
     public Photo() {
         // Required empty public constructor
     }
@@ -34,13 +28,11 @@ public class Photo extends Fragment {
 
     public static Photo newInstance(String param1, String param2) {
         Photo fragment = new Photo();
-
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -58,13 +50,13 @@ public class Photo extends Fragment {
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.mThis.getSupportActionBar().show();
+//                MainActivity.mThis.getSupportActionBar().show();
                 navController.popBackStack();
             }
         });
 
-        Bundle bundle = this.getArguments();
-        Bitmap bitmap = bundle.getParcelable("photo");
+        bundle = this.getArguments();
+        bitmap = bundle.getParcelable("photo");
         photo.setImageBitmap(bitmap);
     }
 }

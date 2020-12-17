@@ -49,8 +49,6 @@ public class MainFragment extends Fragment {
     StorageReference storageReference;
     DatabaseReference mDatabase;
 
-    public Uri imageUri;
-
     public MainFragment() {
         // Required empty public constructor
     }
@@ -87,13 +85,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -101,10 +97,7 @@ public class MainFragment extends Fragment {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-//        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-        //
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        //
         startActivityForResult(intent, 1);
     }
 
@@ -151,29 +144,25 @@ public class MainFragment extends Fragment {
                 for (int i = 0; i < totalItem; i++) {
 
                     Uri imageUri = data.getClipData().getItemAt(i).getUri();
-//                    String path = data.getClipData().getItemAt(i);
+
                     try {
                         bitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), imageUri);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    //StorageReference mRef = storageReference.child("image").child(imagename);
+
                     final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] byteData = baos.toByteArray();
-                    int finalI = i;
                     mRef.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                            //
+                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
                             mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    //You will get download URL in uri
                                     Log.d(TAG, "Download URL = "+ uri.toString());
-                                    //Adding that URL to Realtime database
                                     mDatabase.child(String.valueOf(System.currentTimeMillis())).setValue(uri.toString());
                                 }
                             });
@@ -184,7 +173,6 @@ public class MainFragment extends Fragment {
                             Toast.makeText(getContext(), "Process failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-
                 }
             } else if (data.getData() != null) {
                 Uri imageUri = data.getData();
@@ -202,17 +190,13 @@ public class MainFragment extends Fragment {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(getContext(), "Single image uploaded successfully", Toast.LENGTH_SHORT).show();
-
                         mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                //You will get download URL in uri
                                 Log.d(TAG, "Download URL = "+ uri.toString());
-                                //Adding that URL to Realtime database
                                 mDatabase.child(String.valueOf(System.currentTimeMillis())).setValue(uri.toString());
                             }
                         });
-                        //
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
