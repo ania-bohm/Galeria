@@ -1,5 +1,6 @@
 package com.annabohm.demoapp;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 
@@ -31,6 +32,13 @@ public class MainActivity extends AppCompatActivity {
         actionDelete = findViewById(R.id.action_delete);
         return true;
     }
+//    public void hideActionBar(){
+//        this.getActionBar().hide();
+//        this.getSupportActionBar()
+//    }
+//    public void showActionBar(){
+//        this.getActionBar().show();
+//    }
 
 
 

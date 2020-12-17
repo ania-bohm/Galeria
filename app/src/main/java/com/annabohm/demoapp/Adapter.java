@@ -150,13 +150,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void clearEVERYTHING(){
         imageSelected = 0;
         checkBoxVisible = false;
-//        photos.clear();
         selectedList.clear();
     }
 
 
-    public void deactivateCheckboxes(){
-    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -206,6 +203,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                     BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
                     Bitmap bitmap = drawable.getBitmap();
                     bundle.putParcelable("photo",bitmap);
+                    MainActivity.mThis.getSupportActionBar().hide();
                     navController.navigate(R.id.galleryToPhoto, bundle);
                 }
             });

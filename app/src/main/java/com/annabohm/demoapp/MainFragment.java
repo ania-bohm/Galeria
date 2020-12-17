@@ -22,13 +22,17 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -45,6 +49,7 @@ public class MainFragment extends Fragment {
     ImageView chosenImage;
     StorageReference storageReference;
     DatabaseReference mDatabase;
+    ProgressBar progressBar;
 
     public Uri imageUri;
 
@@ -77,7 +82,7 @@ public class MainFragment extends Fragment {
         addImageButton = view.findViewById(R.id.chooseImageButton);
         galleryButton = view.findViewById(R.id.toGalleryButton);
         galleryButton.setOnClickListener(galleryOnClickListener);
-
+        progressBar = view.findViewById(R.id.progressBar);
         storageReference = FirebaseStorage.getInstance().getReference("Images");
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://galeria-72a00-default-rtdb.firebaseio.com/");
         addImageButton.setOnClickListener(new View.OnClickListener() {
@@ -166,10 +171,12 @@ public class MainFragment extends Fragment {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] byteData = baos.toByteArray();
+//                    progressBar.setVisibility(View.VISIBLE);
+                    int finalI = i;
                     mRef.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
                             //
                             mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
@@ -182,12 +189,20 @@ public class MainFragment extends Fragment {
                             });
                             //
                         }
+                    }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            double progress = ((100.0 * (finalI + 1)) / totalItem);
+                            Toast.makeText(getContext(), ""+progress, Toast.LENGTH_SHORT).show();
+                            progressBar.setProgress((int) progress);
+                        }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getContext(), "Process failed" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
+
                 }
             } else if (data.getData() != null) {
                 Uri imageUri = data.getData();
@@ -225,6 +240,7 @@ public class MainFragment extends Fragment {
                     }
                 });
             }
+//            progressBar.setVisibility(View.INVISIBLE);
         }
         //
     }
