@@ -46,10 +46,8 @@ public class MainFragment extends Fragment {
     NavController navController;
     Button addImageButton;
     Button galleryButton;
-    ImageView chosenImage;
     StorageReference storageReference;
     DatabaseReference mDatabase;
-    ProgressBar progressBar;
 
     public Uri imageUri;
 
@@ -57,12 +55,6 @@ public class MainFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private View.OnClickListener addImageOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            navController.navigate(R.id.mainToChoose);
-        }
-    };
     private View.OnClickListener galleryOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -82,7 +74,6 @@ public class MainFragment extends Fragment {
         addImageButton = view.findViewById(R.id.chooseImageButton);
         galleryButton = view.findViewById(R.id.toGalleryButton);
         galleryButton.setOnClickListener(galleryOnClickListener);
-        progressBar = view.findViewById(R.id.progressBar);
         storageReference = FirebaseStorage.getInstance().getReference("Images");
         mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://galeria-72a00-default-rtdb.firebaseio.com/");
         addImageButton.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +162,6 @@ public class MainFragment extends Fragment {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] byteData = baos.toByteArray();
-//                    progressBar.setVisibility(View.VISIBLE);
                     int finalI = i;
                     mRef.putBytes(byteData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -187,14 +177,6 @@ public class MainFragment extends Fragment {
                                     mDatabase.child(String.valueOf(System.currentTimeMillis())).setValue(uri.toString());
                                 }
                             });
-                            //
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            double progress = ((100.0 * (finalI + 1)) / totalItem);
-                            Toast.makeText(getContext(), ""+progress, Toast.LENGTH_SHORT).show();
-                            progressBar.setProgress((int) progress);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -207,7 +189,6 @@ public class MainFragment extends Fragment {
             } else if (data.getData() != null) {
                 Uri imageUri = data.getData();
 
-                //StorageReference mRef = storageReference.child("image").child(imagename);
                 final StorageReference mRef = storageReference.child(System.currentTimeMillis()+"."+getExtension(imageUri));
                 try {
                     bitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), imageUri);
@@ -221,7 +202,7 @@ public class MainFragment extends Fragment {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(getContext(), "Single image uploaded successfully", Toast.LENGTH_SHORT).show();
-                        //
+
                         mRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
@@ -240,8 +221,6 @@ public class MainFragment extends Fragment {
                     }
                 });
             }
-//            progressBar.setVisibility(View.INVISIBLE);
         }
-        //
     }
 }

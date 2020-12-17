@@ -52,7 +52,6 @@ public class GalleryFragment extends Fragment{
         photos = new ArrayList<>();
         mReference = FirebaseDatabase.getInstance().getReference();
 
-
         mReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -71,30 +70,6 @@ public class GalleryFragment extends Fragment{
         photoCount = view.findViewById(R.id.imageCountTextView);
         cardView = view.findViewById(R.id.cardView);
         check_ScrollingUp = false;
-        photoGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    // Scrolling up
-                    if(check_ScrollingUp)
-                    {
-                        cardView.startAnimation(AnimationUtils.loadAnimation(getContext(),R.anim.downwards));
-                        check_ScrollingUp = false;
-                    }
-
-                } else {
-                    // User scrolls down
-                    if(!check_ScrollingUp )
-                    {
-                        cardView.startAnimation(AnimationUtils.loadAnimation(getContext(),R.anim.upwards));
-                        check_ScrollingUp = true;
-
-                    }
-                }
-            }
-        });
-
         adapter = new Adapter(getContext(), photos, photoCount);
         adapter.notifyDataSetChanged();
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),3, GridLayoutManager.VERTICAL, false);
@@ -105,7 +80,6 @@ public class GalleryFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
