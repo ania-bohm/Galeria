@@ -7,9 +7,9 @@
 
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_margin="8dp"
+        android:layout_width="115dp"
+        android:layout_height="115dp"
+        android:layout_margin="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -20,8 +20,8 @@
 
     <CheckBox
         android:id="@+id/deleteCheckBox"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="115dp"
+        android:layout_height="115dp"
         android:gravity="center_horizontal"
         android:layoutDirection="rtl"
         app:layout_constraintStart_toStartOf="@+id/photo"
